@@ -1,11 +1,21 @@
 package modelo;
 
 import java.awt.Image;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 public class ModeloMedicamento extends Medicamento {
 
@@ -23,7 +33,7 @@ public class ModeloMedicamento extends Medicamento {
             String sql;
 
             sql = "INSERT INTO medicamento (med_nomcom, med_nomgen, med_fechaela, med_fechaexp, med_costo, med_pvp, med_imagen)";
-            sql += "VALUES(?,?,?,?,?,?,?,?,?,?)";
+            sql += "VALUES(?,?,?,?,?,?,?)";
             PreparedStatement ps = conpg.getCon().prepareStatement(sql);
             ps.setString(1, getMed_nomcom());
             ps.setString(2, getMed_nomgen());
@@ -31,12 +41,70 @@ public class ModeloMedicamento extends Medicamento {
             ps.setDate(4, getMed_fechaexp());
             ps.setDouble(5, getMed_costo());
             ps.setDouble(6, getMed_pvp());
-            ps.setBinaryStream(9, getFoto(), getLongitud());
+            ps.setBinaryStream(7, getFoto(), getLongitud());
             ps.executeUpdate();
             return true;
         } catch (SQLException ex) {
             Logger.getLogger(ModeloMedicamento.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+    }
+
+    public List<Medicamento> listaMedicamentosTabla() {
+        try {
+
+            List<Medicamento> lista = new ArrayList<>();
+
+            String sql = "select * from medicamento";
+
+            ResultSet rs = conpg.consulta(sql);
+            byte[] bytea;
+
+            while (rs.next()) {
+
+                Medicamento medicamento = new Medicamento();
+
+                medicamento.setMed_codigo(rs.getInt("med_codigo"));
+                medicamento.setMed_nomcom(rs.getString("med_nomcom"));
+                medicamento.setMed_nomgen(rs.getString("med_nomgen"));
+                medicamento.setMed_fechaela(rs.getDate("med_fechaela"));
+                medicamento.setMed_fechaexp(rs.getDate("med_fechaexp"));
+                medicamento.setMed_costo(rs.getDouble("med_costo"));
+                medicamento.setMed_pvp(rs.getDouble("med_pvp"));
+                bytea = rs.getBytes("med_imagen");
+
+                if (bytea != null) {
+
+                    try {
+                        medicamento.setImagen(obtenerImagen(bytea));
+                    } catch (IOException ex) {
+                        Logger.getLogger(ModeloMedicamento.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
+                lista.add(medicamento); //Agrego los datos a la lista
+            }
+
+            //Cierro la conexion a la BD
+            rs.close();
+            //Retorno la lista
+            return lista;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ModeloMedicamento.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    private Image obtenerImagen(byte[] bytes) throws IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        Iterator it = ImageIO.getImageReadersByFormatName("png");
+        ImageReader reader = (ImageReader) it.next();
+        Object source = bis;
+        ImageInputStream iis = ImageIO.createImageInputStream(source);
+        reader.setInput(iis, true);
+        ImageReadParam param = reader.getDefaultReadParam();
+        param.setSourceSubsampling(1, 1, 0, 0);
+        return reader.read(0, param);
     }
 }
