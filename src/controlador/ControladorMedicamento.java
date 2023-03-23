@@ -4,7 +4,6 @@ import java.awt.Image;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,12 +40,13 @@ public class ControladorMedicamento {
         vista.getBtnExaminar().addActionListener(l -> seleccionarFoto());
         vista.getBtnGuardar().addActionListener(l -> crearEditarMedicamento());
         vista.getBtnActualizar().addActionListener(l -> cargarMedicamentosTabla());
+        vista.getBtnModificar().addActionListener(l -> abrirYCargarDatosEnElDialog());
     }
 
     public void abrirJDlCrear() {
 
         vista.getjDlgMedicamento().setVisible(true);
-        vista.getjDlgMedicamento().setSize(599, 470);
+        vista.getjDlgMedicamento().setSize(620, 470);
         vista.getjDlgMedicamento().setLocationRelativeTo(null);
         vista.getjDlgMedicamento().setName("Ingresar medicamento");
         vista.getjDlgMedicamento().setTitle("Ingresar medicamento");
@@ -116,19 +116,17 @@ public class ControladorMedicamento {
         if ("Ingresar medicamento".equals(vista.getjDlgMedicamento().getName())) {
 
             //INSERTAR
-            ModeloMedicamento medicamento = new ModeloMedicamento();
+            modelo.setMed_nomcom(vista.getTxtNomCom().getText());
+            modelo.setMed_nomgen(vista.getTxtNomGen().getText());
 
-            medicamento.setMed_nomcom(vista.getTxtNomCom().getText());
-            medicamento.setMed_nomgen(vista.getTxtNomGen().getText());
+            java.sql.Date fechaEl = new java.sql.Date(vista.getFechaElaboracion().getDate().getTime());
+            modelo.setMed_fechaela(fechaEl);
 
-            java.sql.Date fechaEl = new java.sql.Date(vista.getFechaElaboracion().getDate().getTime());//Paso de util.Date a sql.Date
-            medicamento.setMed_fechaela(fechaEl);
+            java.sql.Date fechaEx = new java.sql.Date(vista.getFechaExpiracion().getDate().getTime());
+            modelo.setMed_fechaexp(fechaEx);
 
-            java.sql.Date fechaEx = new java.sql.Date(vista.getFechaExpiracion().getDate().getTime());//Paso de util.Date a sql.Date
-            medicamento.setMed_fechaexp(fechaEx);
-
-            medicamento.setMed_costo(Double.parseDouble(vista.getSpinnerCosto().getValue().toString()));
-            medicamento.setMed_pvp(Double.parseDouble(vista.getSpinnerPVP().getValue().toString()));
+            modelo.setMed_costo(Double.parseDouble(vista.getSpinnerCosto().getValue().toString()));
+            modelo.setMed_pvp(Double.parseDouble(vista.getSpinnerPVP().getValue().toString()));
 
             //Foto
             try {
@@ -136,14 +134,14 @@ public class ControladorMedicamento {
                 FileInputStream foto = new FileInputStream(jfc.getSelectedFile());
                 int longitud = (int) jfc.getSelectedFile().length();
 
-                medicamento.setFoto(foto);
-                medicamento.setLongitud(longitud);
+                modelo.setFoto(foto);
+                modelo.setLongitud(longitud);
 
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(ControladorMedicamento.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            if (medicamento.crearMedicamento()) {
+            if (modelo.crearMedicamento()) {
 
                 JOptionPane.showMessageDialog(null, "Medicamento creado satisfactoriamente");
                 vista.getjDlgMedicamento().setVisible(false);
@@ -153,72 +151,74 @@ public class ControladorMedicamento {
 
         } else {
 
-//            //EDITAR
-//            String cedula = vista.getTxtIdentificacion().getText();
-//            String nombres = vista.getTxtNombres().getText();
-//            String apellidos = vista.getTxtApellidos().getText();
-//
-//            String sexo;
-//            if (vista.getRbMasculino().isSelected()) {
-//                sexo = "Masculino";
-//            } else {
-//                if (vista.getRbFemenino().isSelected()) {
-//                    sexo = "Femenino";
-//                } else {
-//                    sexo = "null";
-//                }
-//            }
-//
-//            String telefono = vista.getTxtTelefono().getText();
-//            Date fecha = vista.getjDateFecha().getDate();
-//            double sueldo = Double.parseDouble(vista.getSpinnerSueldo().getValue().toString());
-//            int cupo = Integer.parseInt(vista.getSpinnerCupo().getValue().toString());
-//            String correo = vista.getTxtCorreo().getText();
-//
-//            ModeloPersona persona = new ModeloPersona();
-//            persona.setIdPersona(cedula);
-//            persona.setNombre(nombres);
-//            persona.setApellido(apellidos);
-//            persona.setSexo(sexo);
-//            persona.setTelefono(telefono);
-//
-//            java.sql.Date fechaSQL = new java.sql.Date(fecha.getTime());//Paso de util.Date a sql.Date
-//            persona.setFechaDeNacimiento(fechaSQL);
-//            persona.setSueldo(sueldo);
-//            persona.setCupo(cupo);
-//            persona.setCorreo(correo);
-//
-//            if (vista.getLabelFoto().getIcon() == null) {
-//                if (persona.modificarPersonaSinFoto()) {
-//
-//                    vista.getDlgPersona().setVisible(false);
-//                    JOptionPane.showMessageDialog(vista, "Persona Modificada Satisfactoriamente");
-//                } else {
-//                    JOptionPane.showMessageDialog(vista, "No se pudo modificar la persona");
-//                }
-//            } else {
-//
-//                //Foto
-//                try {
-//
-//                    FileInputStream img = new FileInputStream(jfc.getSelectedFile());
-//                    int longitud = (int) jfc.getSelectedFile().length();
-//                    persona.setFoto(img);
-//                    persona.setLongitud(longitud);
-//                } catch (FileNotFoundException | NullPointerException ex) {
-//                    Logger.getLogger(ControladorPersona.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//
-//                if (persona.modificarPersonaFoto()) {
-//
-//                    vista.getDlgPersona().setVisible(false);
-//                    JOptionPane.showMessageDialog(vista, "Persona Modificada Satisfactoriamente");
-//                } else {
-//                    JOptionPane.showMessageDialog(vista, "No se pudo modificar la persona");
-//                }
-//            }
+            //EDITAR
+            modelo.setMed_codigo(Integer.parseInt(vista.getTxtCodigo().getText()));
+            modelo.setMed_nomcom(vista.getTxtNomCom().getText());
+            modelo.setMed_nomgen(vista.getTxtNomGen().getText());
+
+            java.sql.Date fechaEl = new java.sql.Date(vista.getFechaElaboracion().getDate().getTime());
+            modelo.setMed_fechaela(fechaEl);
+
+            java.sql.Date fechaEx = new java.sql.Date(vista.getFechaExpiracion().getDate().getTime());
+            modelo.setMed_fechaexp(fechaEx);
+
+            modelo.setMed_costo(Double.parseDouble(vista.getSpinnerCosto().getValue().toString()));
+            modelo.setMed_pvp(Double.parseDouble(vista.getSpinnerPVP().getValue().toString()));
+            //Foto
+            try {
+
+                FileInputStream foto = new FileInputStream(jfc.getSelectedFile());
+                int longitud = (int) jfc.getSelectedFile().length();
+
+                modelo.setFoto(foto);
+                modelo.setLongitud(longitud);
+
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ControladorMedicamento.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            if (modelo.modificarMedicamento()) {
+
+                JOptionPane.showMessageDialog(null, "Medicamento modificado satisfactoriamente");
+                vista.getjDlgMedicamento().setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(vista, "No se pudo modificar el medicamento");
+            }
+
         }
 
         cargarMedicamentosTabla();
+    }
+
+    public void abrirYCargarDatosEnElDialog() {
+
+        int seleccion = vista.getTblMedicamento().getSelectedRow();
+
+        if (seleccion == -1) {
+            JOptionPane.showMessageDialog(null, "Aun no ha seleccionado una fila");
+        } else {
+
+            int codigo = Integer.parseInt(vista.getTblMedicamento().getValueAt(seleccion, 0).toString());
+            modelo.listaMedicamentosTabla().forEach((m) -> {
+                if (m.getMed_codigo() == codigo) {
+
+                    //Abre el jDialog y carga los datos en el jDialog
+                    vista.getjDlgMedicamento().setVisible(true);
+                    vista.getjDlgMedicamento().setSize(620, 470);
+                    vista.getjDlgMedicamento().setLocationRelativeTo(null);
+                    vista.getjDlgMedicamento().setName("Editar");
+                    vista.getjDlgMedicamento().setTitle("Editar");
+
+                    vista.getTxtCodigo().setText(String.valueOf(codigo));
+                    vista.getTxtNomCom().setText(m.getMed_nomcom());
+                    vista.getTxtNomGen().setText(m.getMed_nomgen());
+                    vista.getFechaElaboracion().setDate(m.getMed_fechaela());
+                    vista.getFechaExpiracion().setDate(m.getMed_fechaexp());
+                    vista.getSpinnerCosto().setValue(m.getMed_costo());
+                    vista.getSpinnerPVP().setValue(m.getMed_pvp());
+                    vista.getLblFoto().setIcon(modelo.ConsultarFoto(codigo)); //Llamo al metodo 'ConsultarFoto' del modelo
+                }
+            });
+        }
     }
 }

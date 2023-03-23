@@ -1,9 +1,11 @@
 package modelo;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,6 +18,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import javax.swing.ImageIcon;
 
 public class ModeloMedicamento extends Medicamento {
 
@@ -106,5 +109,57 @@ public class ModeloMedicamento extends Medicamento {
         ImageReadParam param = reader.getDefaultReadParam();
         param.setSourceSubsampling(1, 1, 0, 0);
         return reader.read(0, param);
+    }
+
+    public boolean modificarMedicamento() {
+        try {
+            String sql;
+
+            sql = "UPDATE medicamento SET med_nomcom=?,med_nomgen=?,med_fechaela=?,med_fechaexp=?,med_costo=?,med_pvp=?,med_imagen=? Where med_codigo=?";
+            PreparedStatement ps = conpg.getCon().prepareStatement(sql);
+            ps.setString(1, getMed_nomcom());
+            ps.setString(2, getMed_nomgen());
+            ps.setDate(3, getMed_fechaela());
+            ps.setDate(4, getMed_fechaexp());
+            ps.setDouble(5, getMed_costo());
+            ps.setDouble(6, getMed_pvp());
+            ps.setBinaryStream(7, getFoto(), getLongitud());
+            ps.setInt(8, getMed_codigo());
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(ModeloMedicamento.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public ImageIcon ConsultarFoto(int codigo) {
+        conpg.getCon();
+        String sql = "select med_imagen from \"medicamento\" where med_codigo = " + codigo + ";";
+        ImageIcon foto;
+        InputStream is;
+
+        try {
+            ResultSet rs = conpg.consulta(sql);
+            while (rs.next()) {
+
+                is = rs.getBinaryStream(1);
+
+                BufferedImage bi = ImageIO.read(is);
+                foto = new ImageIcon(bi);
+
+                Image img = foto.getImage();
+                Image newimg = img.getScaledInstance(118, 139, java.awt.Image.SCALE_SMOOTH);
+
+                ImageIcon newicon = new ImageIcon(newimg);
+
+                return newicon;
+            }
+        } catch (Exception ex) {
+
+            return null;
+        }
+
+        return null;
     }
 }

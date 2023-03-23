@@ -135,14 +135,6 @@ public class VistaMedicamento extends javax.swing.JFrame {
         this.spinnerPVP = spinnerPVP;
     }
 
-    public JTextField getTxtCodigo() {
-        return txtCodigo;
-    }
-
-    public void setTxtCodigo(JTextField txtCodigo) {
-        this.txtCodigo = txtCodigo;
-    }
-
     public JTextField getTxtNomCom() {
         return txtNomCom;
     }
@@ -159,13 +151,19 @@ public class VistaMedicamento extends javax.swing.JFrame {
         this.txtNomGen = txtNomGen;
     }
 
+    public JTextField getTxtCodigo() {
+        return txtCodigo;
+    }
+
+    public void setTxtCodigo(JTextField txtCodigo) {
+        this.txtCodigo = txtCodigo;
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jDlgMedicamento = new javax.swing.JDialog();
-        txtCodigo = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         txtNomCom = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -182,6 +180,8 @@ public class VistaMedicamento extends javax.swing.JFrame {
         btnExaminar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         btnGuardar = new javax.swing.JButton();
+        txtCodigo = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         btnCrear = new javax.swing.JButton();
         btnActualizar = new javax.swing.JButton();
@@ -193,10 +193,6 @@ public class VistaMedicamento extends javax.swing.JFrame {
         tblMedicamento = new javax.swing.JTable();
 
         jDlgMedicamento.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jDlgMedicamento.getContentPane().add(txtCodigo, new org.netbeans.lib.awtextra.AbsoluteConstraints(514, 37, 44, -1));
-
-        jLabel2.setText("Codigo:");
-        jDlgMedicamento.getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(432, 40, -1, -1));
 
         jLabel3.setText("Nombre comercial:");
         jDlgMedicamento.getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 40, -1, -1));
@@ -223,16 +219,20 @@ public class VistaMedicamento extends javax.swing.JFrame {
         jDlgMedicamento.getContentPane().add(spinnerPVP, new org.netbeans.lib.awtextra.AbsoluteConstraints(169, 316, 149, -1));
 
         lblFoto.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jDlgMedicamento.getContentPane().add(lblFoto, new org.netbeans.lib.awtextra.AbsoluteConstraints(432, 93, 126, 146));
+        jDlgMedicamento.getContentPane().add(lblFoto, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 100, 126, 146));
 
         btnExaminar.setText("Examinar");
-        jDlgMedicamento.getContentPane().add(btnExaminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(456, 252, -1, -1));
+        jDlgMedicamento.getContentPane().add(btnExaminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 260, -1, -1));
 
         btnCancelar.setText("Cancelar");
         jDlgMedicamento.getContentPane().add(btnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 388, -1, -1));
 
         btnGuardar.setText("Guardar");
         jDlgMedicamento.getContentPane().add(btnGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(169, 388, -1, -1));
+        jDlgMedicamento.getContentPane().add(txtCodigo, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 40, 40, -1));
+
+        jLabel2.setText("Código:");
+        jDlgMedicamento.getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 40, -1, -1));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
