@@ -189,6 +189,7 @@ public class VistaMedicamento extends javax.swing.JFrame {
         btnModificar = new javax.swing.JButton();
         txtBuscar = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
+        btnImprimir = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblMedicamento = new javax.swing.JTable();
 
@@ -246,6 +247,8 @@ public class VistaMedicamento extends javax.swing.JFrame {
 
         jLabel1.setText("Buscar");
 
+        btnImprimir.setText("Imprimir");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -263,7 +266,9 @@ public class VistaMedicamento extends javax.swing.JFrame {
                 .addComponent(btnActualizar)
                 .addGap(31, 31, 31)
                 .addComponent(btnEliminar)
-                .addContainerGap())
+                .addGap(39, 39, 39)
+                .addComponent(btnImprimir)
+                .addGap(76, 76, 76))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -275,7 +280,8 @@ public class VistaMedicamento extends javax.swing.JFrame {
                     .addComponent(btnModificar)
                     .addComponent(btnCrear)
                     .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel1)
+                    .addComponent(btnImprimir))
                 .addGap(37, 37, 37))
         );
 
@@ -320,6 +326,7 @@ public class VistaMedicamento extends javax.swing.JFrame {
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnExaminar;
     private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnImprimir;
     private javax.swing.JButton btnModificar;
     private com.toedter.calendar.JDateChooser fechaElaboracion;
     private com.toedter.calendar.JDateChooser fechaExpiracion;
