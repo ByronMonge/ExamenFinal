@@ -1,6 +1,8 @@
 package controlador;
 
 import java.awt.Image;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,12 +37,14 @@ public class ControladorMedicamento {
     public void iniciarControl() {
 
         cargarMedicamentosTabla();
+        buscar();
 
         vista.getBtnCrear().addActionListener(l -> abrirJDlCrear());
         vista.getBtnExaminar().addActionListener(l -> seleccionarFoto());
         vista.getBtnGuardar().addActionListener(l -> crearEditarMedicamento());
         vista.getBtnActualizar().addActionListener(l -> cargarMedicamentosTabla());
         vista.getBtnModificar().addActionListener(l -> abrirYCargarDatosEnElDialog());
+        vista.getBtnEliminar().addActionListener(l -> eliminar());
     }
 
     public void abrirJDlCrear() {
@@ -220,5 +224,93 @@ public class ControladorMedicamento {
                 }
             });
         }
+    }
+
+    public void eliminar() {
+
+        int fila = vista.getTblMedicamento().getSelectedRow();
+
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(null, "Aun no ha seleccionado una fila");
+        } else {
+
+            int response = JOptionPane.showConfirmDialog(vista, "¿Seguro que desea eliminar esta información?", "Confirmar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.YES_OPTION) {
+
+                int codigo;
+                codigo = Integer.parseInt(vista.getTblMedicamento().getValueAt(fila, 0).toString());
+
+                if (modelo.eliminarMedicamento(codigo)) {
+                    JOptionPane.showMessageDialog(null, "El medicamento se elimino satisfactoriamente");
+                    cargarMedicamentosTabla();
+                } else {
+                    JOptionPane.showMessageDialog(null, "El medicamento no se pudo eliminar");
+                }
+            }
+        }
+    }
+
+    public void buscar() {
+
+        KeyListener eventoTeclado = new KeyListener() {//Crear un objeto de tipo keyListener(Es una interface) por lo tanto se debe implementar sus metodos abstractos
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+                vista.getTblMedicamento().setDefaultRenderer(Object.class, new ImagenTabla());//La manera de renderizar la tabla.
+                vista.getTblMedicamento().setRowHeight(100);
+
+                //Enlazar el modelo de tabla con mi controlador.
+                DefaultTableModel tblModel;
+                tblModel = (DefaultTableModel) vista.getTblMedicamento().getModel();
+                tblModel.setNumRows(0);//limpio filas de la tabla.
+
+                int codigo = 0;
+                if (!vista.getTxtBuscar().getText().equals("")) {
+                    codigo = Integer.parseInt(vista.getTxtBuscar().getText());
+                }
+
+                List<Medicamento> listap = modelo.buscar(codigo);//Enlazo al Modelo y obtengo los datos
+                Holder<Integer> i = new Holder<>(0);//contador para el no. fila
+                listap.stream().forEach(pe -> {
+
+                    tblModel.addRow(new Object[9]);//Creo una fila vacia
+                    vista.getTblMedicamento().setValueAt(pe.getMed_codigo(), i.value, 0);
+                    vista.getTblMedicamento().setValueAt(pe.getMed_nomcom(), i.value, 1);
+                    vista.getTblMedicamento().setValueAt(pe.getMed_nomgen(), i.value, 2);
+                    vista.getTblMedicamento().setValueAt(pe.getMed_fechaela(), i.value, 3);
+                    vista.getTblMedicamento().setValueAt(pe.getMed_fechaexp(), i.value, 4);
+                    vista.getTblMedicamento().setValueAt(pe.getMed_costo(), i.value, 5);
+                    vista.getTblMedicamento().setValueAt(pe.getMed_pvp(), i.value, 6);
+
+                    Image foto = pe.getImagen();
+                    if (foto != null) {
+
+                        Image nimg = foto.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                        ImageIcon icono = new ImageIcon(nimg);
+                        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+                        renderer.setIcon(icono);
+                        vista.getTblMedicamento().setValueAt(new JLabel(icono), i.value, 7);
+
+                    } else {
+                        vista.getTblMedicamento().setValueAt(null, i.value, 7);
+                    }
+
+                    i.value++;
+                });
+            }
+        };
+
+        vista.getTxtBuscar().addKeyListener(eventoTeclado); //"addKeyListener" es un metodo que se le tiene que pasar como argumento un objeto de tipo keyListener 
     }
 }

@@ -162,4 +162,58 @@ public class ModeloMedicamento extends Medicamento {
 
         return null;
     }
+
+    public boolean eliminarMedicamento(int codigo) {
+
+        String sql = "DELETE FROM medicamento WHERE med_codigo = " + codigo + ";";
+
+        return conpg.accion(sql);
+    }
+
+    public List<Medicamento> buscar(int codigo) {
+
+        try {
+
+            List<Medicamento> lista = new ArrayList<>();
+
+            String sql = "select * from medicamento where med_codigo = " + codigo + ";";
+
+            ResultSet rs = conpg.consulta(sql);
+            byte[] bytea;
+
+            while (rs.next()) {
+
+                Medicamento medicamento = new Medicamento();
+
+                medicamento.setMed_codigo(rs.getInt("med_codigo"));
+                medicamento.setMed_nomcom(rs.getString("med_nomcom"));
+                medicamento.setMed_nomgen(rs.getString("med_nomgen"));
+                medicamento.setMed_fechaela(rs.getDate("med_fechaela"));
+                medicamento.setMed_fechaexp(rs.getDate("med_fechaexp"));
+                medicamento.setMed_costo(rs.getDouble("med_costo"));
+                medicamento.setMed_pvp(rs.getDouble("med_pvp"));
+                bytea = rs.getBytes("med_imagen");
+
+                if (bytea != null) {
+
+                    try {
+                        medicamento.setImagen(obtenerImagen(bytea));
+                    } catch (IOException ex) {
+                        Logger.getLogger(ModeloMedicamento.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
+                lista.add(medicamento); //Agrego los datos a la lista
+            }
+
+            //Cierro la conexion a la BD
+            rs.close();
+            //Retorno la lista
+            return lista;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ModeloMedicamento.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
 }
