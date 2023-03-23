@@ -6,7 +6,9 @@ import java.awt.event.KeyListener;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -17,8 +19,15 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.xml.ws.Holder;
+import modelo.ConectPG;
 import modelo.Medicamento;
 import modelo.ModeloMedicamento;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.view.JasperViewer;
 import vista.VistaMedicamento;
 
 public class ControladorMedicamento {
@@ -45,6 +54,28 @@ public class ControladorMedicamento {
         vista.getBtnActualizar().addActionListener(l -> cargarMedicamentosTabla());
         vista.getBtnModificar().addActionListener(l -> abrirYCargarDatosEnElDialog());
         vista.getBtnEliminar().addActionListener(l -> eliminar());
+    }
+
+    public void imprimir() {
+
+        ConectPG cpg = new ConectPG();//Instanciar la conexion con esto abrimos la conexion a la BD
+        try {
+            JasperReport jr = (JasperReport) JRLoader.loadObject(getClass().getResource("/reportes/CursoReporte.jasper"));
+
+            //Hacer una vista previa
+            //JasperPrint jp = JasperFillManager.fillReport(jr, null, cpg.getCon());//JasperFillManager.fillReport: Carga los datos de la BD.//JasperPrint: Hace la impresion del reporte. Puede ir 'null' si en el jasper no existen parametros caso contrario se envian los parametros necesarios
+            Map<String, Object> parametros = new HashMap<String, Object>();
+
+            parametros.put("RutaImagen", "src/imagenesJasper/curso.png"); //En donde esta 'titulo' tienen que ser igual al nombre que esta en el parametro del jasper
+
+            JasperPrint jp = JasperFillManager.fillReport(jr, parametros, cpg.getCon());//'parametros' es el Map recien creado que contiene los parametros que iran al jasper
+
+            JasperViewer jv = new JasperViewer(jp, false); //Se pasa false para que no se cierre el sistema 
+            jv.setVisible(true);
+
+        } catch (JRException ex) {
+            Logger.getLogger(ControladorMedicamento.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void abrirJDlCrear() {
