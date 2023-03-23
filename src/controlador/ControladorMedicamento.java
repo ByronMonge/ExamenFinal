@@ -54,6 +54,7 @@ public class ControladorMedicamento {
         vista.getBtnActualizar().addActionListener(l -> cargarMedicamentosTabla());
         vista.getBtnModificar().addActionListener(l -> abrirYCargarDatosEnElDialog());
         vista.getBtnEliminar().addActionListener(l -> eliminar());
+        vista.getBtnImprimir().addActionListener(l -> imprimir());
     }
 
     public void imprimir() {
